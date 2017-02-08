@@ -9,13 +9,12 @@ import org.apache.mahout.cf.taste.recommender.Recommender;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.List;
 
-public class S {
+class S {
   static void  writeResult(Recommender rec,String fp) throws Exception{
     DataModel model = rec.getDataModel();
-    Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fp), Charsets.UTF_8));
+    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fp), Charsets.UTF_8));
     for (LongPrimitiveIterator iterator = model.getUserIDs(); iterator.hasNext();){
       long uid = iterator.next();
       List<RecommendedItem> reced =  rec.recommend(uid, 3);
@@ -25,6 +24,7 @@ public class S {
           writer.write(",");
           writer.write(String.valueOf(item.getItemID()));
         }
+        writer.newLine();
       }
     }
   }

@@ -13,16 +13,18 @@ import java.io.File;
 
 public class ItemBasedRecommender {
   public static void main(String[] args) throws Exception{
-    DataModel model = new FileDataModel(new File("/e/ml/ml-latest/ratings-headless.csv"));
+    Commanders cmds = Commanders.make(args);
+
+    DataModel model = new FileDataModel(new File(cmds.rating));
     ItemSimilarity similarity = new PearsonCorrelationSimilarity(model);
     org.apache.mahout.cf.taste.recommender.ItemBasedRecommender rec = new GenericItemBasedRecommender(model, similarity);
 
     BatchItemSimilarities batch= new MultithreadedBatchItemSimilarities(rec, 5);
     int sims = batch.computeItemSimilarities(2, 1,
-        new FileSimilarItemsWriter(new File("/e/ml/ml-latest/item-sim.csv")));
-    System.out.println("/e/ml/ml-latest/item-sim.csv "+sims);
+        new FileSimilarItemsWriter(new File("/e/ml/ml-latest-small/item-sim.csv")));
+    System.out.println("/e/ml/ml-latest-small/item-sim.csv "+sims);
 
-    String file = "/e/ml/ml-latest/item-result.csv";
+    String file = "/e/ml/ml-latest-small/item-result.csv";
     S.writeResult(rec, file);
   }
 }
