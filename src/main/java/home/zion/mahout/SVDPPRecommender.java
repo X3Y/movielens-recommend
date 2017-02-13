@@ -10,10 +10,13 @@ import java.io.File;
 
 public class SVDPPRecommender {
   public static void main(String[]args)throws Exception{
-    DataModel model = new FileDataModel(new File("/e/ml/ml-latest/rating"));
-    Factorizer factorizer = new SVDPlusPlusFactorizer(model, 10, 30);
+    Commanders cmds = Commanders.make(args);
+
+    DataModel model = new FileDataModel(new File(cmds.ratingPath()));
+    Factorizer factorizer = new SVDPlusPlusFactorizer(model, cmds.features, cmds.iterations);
     Recommender recommender = new SVDRecommender(model, factorizer);
-    String file = "/e/ml/ml-latest/svd-result.csv";
-    S.writeResult(recommender, file);
+
+    String file = cmds.targetFile("svd.recommends");
+    S.writeResult(recommender, file, cmds.count);
   }
 }

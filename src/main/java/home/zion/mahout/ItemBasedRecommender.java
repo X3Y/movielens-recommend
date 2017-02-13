@@ -1,13 +1,11 @@
 package home.zion.mahout;
 
-import org.apache.mahout.cf.taste.impl.recommender.GenericItemBasedRecommender;
-import org.apache.mahout.cf.taste.impl.similarity.PearsonCorrelationSimilarity;
-import org.apache.mahout.cf.taste.impl.similarity.precompute.FileSimilarItemsWriter;
-import org.apache.mahout.cf.taste.impl.similarity.precompute.MultithreadedBatchItemSimilarities;
-import org.apache.mahout.cf.taste.model.DataModel;
-import org.apache.mahout.cf.taste.similarity.ItemSimilarity;
 import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
-import org.apache.mahout.cf.taste.similarity.precompute.BatchItemSimilarities;
+import org.apache.mahout.cf.taste.impl.recommender.GenericItemBasedRecommender;
+import org.apache.mahout.cf.taste.impl.similarity.UncenteredCosineSimilarity;
+import org.apache.mahout.cf.taste.model.DataModel;
+import org.apache.mahout.cf.taste.recommender.Recommender;
+import org.apache.mahout.cf.taste.similarity.ItemSimilarity;
 
 import java.io.File;
 
@@ -15,16 +13,12 @@ public class ItemBasedRecommender {
   public static void main(String[] args) throws Exception{
     Commanders cmds = Commanders.make(args);
 
-    DataModel model = new FileDataModel(new File(cmds.rating));
-    ItemSimilarity similarity = new PearsonCorrelationSimilarity(model);
-    org.apache.mahout.cf.taste.recommender.ItemBasedRecommender rec = new GenericItemBasedRecommender(model, similarity);
+    DataModel model = new FileDataModel(new File(cmds.ratingPath()));
 
-    BatchItemSimilarities batch= new MultithreadedBatchItemSimilarities(rec, 5);
-    int sims = batch.computeItemSimilarities(2, 1,
-        new FileSimilarItemsWriter(new File("/e/ml/ml-latest-small/item-sim.csv")));
-    System.out.println("/e/ml/ml-latest-small/item-sim.csv "+sims);
+    ItemSimilarity similarity = new UncenteredCosineSimilarity(model);
+    Recommender rec = new GenericItemBasedRecommender(model, similarity);
 
-    String file = "/e/ml/ml-latest-small/item-result.csv";
-    S.writeResult(rec, file);
+    String file = cmds.targetFile("cos-item.recommends");
+    S.writeResult(rec, file, cmds.count);
   }
 }
